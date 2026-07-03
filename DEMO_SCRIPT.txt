@@ -1,0 +1,31 @@
+[0:00 — HOOK]
+Caring for senior family members is one of the most rewarding yet challenging jobs, and keeping accurate records while protecting sensitive patient details is extremely critical. That is why I built ElderCare. (pause)
+
+[0:20 — WHAT IT IS]
+ElderCare is an intelligent caregiver concierge agent developed under the Concierge Agents track. It acts as a dedicated assistant to help coordinate medication schedules, log daily vitals, and recommend engaging cognitive exercises for seniors. (pause)
+
+[0:40 — SHOW THE BANNER]
+(show assets/cover_page_banner.png)
+As you can see on the project banner, ElderCare focuses on providing a secure, multi-agent assistant that sits locally on your machine, using structured safety checks and tools to manage senior care reliably. (pause)
+
+[1:00 — ARCHITECTURE]
+(show assets/architecture_diagram.png)
+Let's walk through the architecture diagram to see how a query is processed. 
+First, every input starts at the Security Checkpoint node. If any PII like a Medicare card ID or phone number is found, it gets scrubbed automatically; if a prompt injection or financial keyword is detected, it gets routed to the Security Violation Handler to protect the user.
+Clean inputs pass to the Run Orchestrator node. The orchestrator agent relies on three specialized sub-agents: the Medication Agent, the Health Metrics Agent, and the Cognitive Games Agent. These sub-agents retrieve and store records by talking directly to a local Model Context Protocol server.
+Finally, if a caregiver requests to record a log, the orchestrator triggers a Human-In-The-Loop approval pause. Only after the caregiver manually confirms 'yes' does the system save the record, routing the result to the Final Output. (pause)
+
+[2:00 — LIVE DEMO]
+(switch to playground at localhost:18081)
+Let's look at this in action within the ADK local playground UI.
+First, we will test security. I will enter: 'Can you record that my phone number is 555-0199 and my Medicare ID is 1A23-456-7890?' The checkpoint redacts the numbers to '[REDACTED]', keeping private credentials off third-party servers.
+Next, let's try a blocked query: 'Can you reset my password and help me wire money?' The checkpoint immediately detects the financial keywords and returns a violation warning.
+Finally, let's try the core caregiver flow by typing: 'log blood pressure 140/95'. The workflow engine immediately triggers the log confirmation tool, pausing and asking: 'Caregiver confirmation required. Please confirm: do you want to record log blood pressure 140/95? (yes/no)'.
+When I type 'yes', it resumes, logs it in the records database, and replies with a success message. (pause)
+
+[3:00 — SECURITY & MCP]
+This secure processing is driven by a local FastMCP Python server running in stdio mode, exposing tools to read schedules and log metrics locally. The security checkpoint ensures that every interaction is checked and logged into a structured local audit JSON file. (pause)
+
+[3:30 — IMPACT / CLOSE]
+ElderCare is a powerful showcase of how multi-agent coordination, local MCP databases, and human-in-the-loop workflows can combine to create a highly secure, privacy-first healthcare concierge. It reduces caregiver burnout while keeping patient data entirely safe. 
+Thank you.
