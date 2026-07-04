@@ -226,7 +226,7 @@ async def run_orchestrator(ctx: Context, node_input: Any):
     # 1. Check if we are resuming from a pending caregiver confirmation
     if ctx.state.get("awaiting_confirmation"):
         ctx.state["awaiting_confirmation"] = False
-        user_response = str(node_input).strip().lower()
+        user_response = str(ctx.resume_inputs.get("caregiver_confirm", "")).strip().lower()
         pending_item = ctx.state.get("temp_log_item")
         
         if user_response in ["yes", "y", "confirm"]:
@@ -252,6 +252,7 @@ async def run_orchestrator(ctx: Context, node_input: Any):
         ctx.state["awaiting_confirmation"] = True
         # Suspend workflow and return RequestInput event
         return RequestInput(
+            interrupt_id="caregiver_confirm",
             message=f"✋ Caregiver confirmation required. Please confirm: do you want to record '{ctx.state.get('temp_log_item')}'? (yes/no)",
             response_schema=str
         )
